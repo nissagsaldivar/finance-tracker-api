@@ -25,6 +25,23 @@ app.get('/finance-data', (req: Request, res: Response, next: NextFunction) => {
     res.json({ items });
   })
 
+// add a new spending item
+app.post('/finance-data', (req: Request, res: Response, next: NextFunction) => {
+    const { category, amount } = req.body;
+  
+    // validate the request body
+    if (!category || !amount) {
+      res.status(400).json({ error: 'category and amount are required' });
+      return;
+    }
+  
+    // insert into the database
+    const insert = db.prepare('INSERT INTO spending (category, value) VALUES (?, ?)');
+    insert.run(category, amount);
+  
+    res.json({ message: 'Spending item added successfully' });
+  });
+  
 // start listening
 app.listen(PORT, () => {
     console.log(`Server is running on port ${PORT}`);
